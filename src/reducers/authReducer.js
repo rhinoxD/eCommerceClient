@@ -1,14 +1,16 @@
 import {
+  AUTH_ERROR,
   ERRORS,
+  FAILURE_REGISTER,
   SET_CURRENT_USER,
   SUCCESSFUL_REGISTER,
 } from '../actions/types';
-import { isEmpty } from 'lodash';
 
 const initialState = {
   isAuthenticated: false,
   token: localStorage.getItem('token'),
   user: {},
+  errors: [],
 };
 
 export default function (state = initialState, action) {
@@ -17,7 +19,7 @@ export default function (state = initialState, action) {
     case SET_CURRENT_USER:
       return {
         ...state,
-        isAuthenticated: !isEmpty(payload),
+        isAuthenticated: true,
         user: payload,
       };
     case SUCCESSFUL_REGISTER:
@@ -27,12 +29,18 @@ export default function (state = initialState, action) {
         ...payload,
         isAuthenticated: true,
       };
-    case ERRORS:
+    case FAILURE_REGISTER:
+    case AUTH_ERROR:
       localStorage.removeItem('token');
       return {
         ...state,
         token: null,
         isAuthenticated: false,
+      };
+    case ERRORS:
+      return {
+        ...state,
+        errors: payload,
       };
     default:
       return state;
